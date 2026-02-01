@@ -1,9 +1,10 @@
 import time
 import requests
+import asyncio
 from bs4 import BeautifulSoup
 from telegram import Bot
 
-# ===== TELEGRAM CONFIG (TEMPORARY – CHANGE LATER) =====
+# ===== TELEGRAM CONFIG (TEMP – CHANGE LATER) =====
 BOT_TOKEN = "8393459969:AAGwuRANl7yELrQcFM2paMCKD3o76axojMQ"
 CHAT_ID = "1683272434"
 
@@ -16,8 +17,8 @@ bot = Bot(token=BOT_TOKEN)
 already_alerted = False
 
 
-def send(msg):
-    bot.send_message(chat_id=CHAT_ID, text=msg)
+async def send(msg):
+    await bot.send_message(chat_id=CHAT_ID, text=msg)
 
 
 def casa_available():
@@ -35,15 +36,12 @@ def casa_available():
         modality = cols[1].get_text(strip=True).upper()
         status = cols[4].get_text(strip=True).upper()
 
-        # ✅ ONLY CENT@CASA
         if "CASA" not in modality:
             continue
 
-        # ❌ IGNORE YNU
         if "YNU" in modality:
             continue
 
-        # ✅ MUST BE ACTUALLY BOOKABLE
         for ok in ALLOWED_STATUSES:
             if ok in status:
                 return modality, status
@@ -51,17 +49,17 @@ def casa_available():
     return None, None
 
 
-def main():
+async def main():
     global already_alerted
 
-    send("🤖 CISIA CENT@CASA watcher is LIVE (24/7)")
+    await send("🤖 CISIA CENT@CASA watcher is LIVE (24/7)")
 
     while True:
         try:
             modality, status = casa_available()
 
             if modality and not already_alerted:
-                send(
+                await send(
                     "🚨 CENT@CASA AVAILABLE 🚨\n\n"
                     f"Modality: {modality}\n"
                     f"Status: {status}\n\n"
@@ -73,12 +71,13 @@ def main():
             if not modality:
                 already_alerted = False
 
-            time.sleep(CHECK_INTERVAL)
+            await asyncio.sleep(CHECK_INTERVAL)
 
         except Exception as e:
-            send(f"⚠️ Bot error:\n{e}")
-            time.sleep(600)
+            await send(f"⚠️ Bot error:\n{e}")
+            await asyncio.sleep(600)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
+
