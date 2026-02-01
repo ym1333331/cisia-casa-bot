@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from telegram import Bot
 
 # ===== TELEGRAM CONFIG =====
-BOT_TOKEN = "YOUR_NEW_TOKEN"  # replace with the working token
+BOT_TOKEN = "8393459969:AAGwuRANl7yELrQcFM2paMCKD3o76axojMQ"  # replace with the working token
 CHAT_ID = "1683272434"        # your chat id
 
 # ===== CONFIG =====
@@ -79,3 +79,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
