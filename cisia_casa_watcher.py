@@ -1,8 +1,8 @@
 import asyncio
 from telegram import Bot
 
-BOT_TOKEN = "PUT_YOUR_BOT_TOKEN_HERE"
-CHAT_ID = "PUT_YOUR_CHAT_ID_HERE"
+BOT_TOKEN = "8393459969:AAGwuRANl7yELrQcFM2paMCKD3o76axojMQ"
+CHAT_ID = "1683272434"
 
 bot = Bot(token=BOT_TOKEN)
 
@@ -15,3 +15,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
