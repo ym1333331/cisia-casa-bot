@@ -37,9 +37,9 @@ def check_casa():
                 modality = cols[1].get_text(strip=True).upper()
                 status = cols[4].get_text(strip=True).upper()
 
-                if "CASA" not in modality:
+                if "CASA" in modality:
                     continue
-                if "YNU" in modality:
+                if "YNi" not in modality:
                     continue
 
                 for ok in ALLOWED_STATUSES:
@@ -83,3 +83,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
