@@ -11,7 +11,7 @@ CHAT_ID = "1683272434"
 
 # ===== CONFIG =====
 URL = "https://testcisia.it/calendario.php?tolc=cents&lingua=inglese"
-CHECK_INTERVAL = 300   # seconds between normal checks
+CHECK_INTERVAL = 300   # seconds between checks
 RETRY_DELAY = 15       # seconds between retries if request fails
 ALLOWED_STATUSES = ["DISPONIBILI", "APERTE", "PRENOTABILE"]
 
@@ -20,11 +20,16 @@ already_alerted = False
 
 
 async def send_message(msg):
+    """Send a Telegram message asynchronously."""
     await bot.send_message(chat_id=CHAT_ID, text=msg)
 
 
 def check_yni():
-    """Check the CISIA page for CENT@YNI availability, retrying endlessly if network fails."""
+    """
+    Check the CISIA page for CENT@YNI (university / in-person) availability.
+    YNI is detected by EXCLUDING CASA, because CASA is consistently labeled
+    while YNI wording is inconsistent on CISIA.
+    """
     while True:
         try:
             r = requests.get(URL, timeout=20)
@@ -39,17 +44,13 @@ def check_yni():
                 modality = cols[1].get_text(strip=True).upper()
                 status = cols[4].get_text(strip=True).upper()
 
-                # ✅ YNI only
-                if "YNI" not in modality:
-                    continue
-
-                # ❌ exclude CASA
+                # ❌ Exclude CENT@CASA exams
                 if "CASA" in modality:
                     continue
 
-                for ok in ALLOWED_STATUSES:
-                    if ok in status:
-                        return modality, status
+                # ✅ Accept any open / bookable status
+                if any(ok in status for ok in ALLOWED_STATUSES):
+                    return modality, status
 
             return None, None
 
@@ -77,6 +78,7 @@ async def main():
                 )
                 already_alerted = True
 
+            # Reset alert when no YNI places exist
             if not modality:
                 already_alerted = False
 
